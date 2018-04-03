@@ -53,4 +53,22 @@ def exampleRegression(dataSet, column, target):
 
     plt.show()
 
+def errorCheck(X, y):
+
+    # Attribte definition
+    X_train = X[: 125] #125 = 80%
+    X_test = X[-31:] #31 = 20%
+
+    # Target defenition
+    y_train = y[: 125] #125 = 80%
+    y_test = y[-31:] #31 = 20%
+
+    #Creating regression model
+    regr = linear_model.LinearRegression()
+    regr.fit(X_train, y_train)
+
+    y_pred = regr.predict(X_test)
+
+    return mean_squared_error(y_test, y_pred)
+
    
