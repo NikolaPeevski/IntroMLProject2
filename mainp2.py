@@ -7,4 +7,5 @@ dataSet = utils.loadDataSet()
 
 #14 - Hemoglobin
 #24 - Class
-utils.exampleRegression(dataSet, 12, 24)
+# utils.exampleRegression(dataSet, 12, 24)
+utils.crossValidation()
