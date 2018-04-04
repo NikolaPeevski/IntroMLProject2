@@ -165,17 +165,13 @@ def bmplot(yt, xt, X):
     for i in range(0,len(xt)):
         axvline(i-0.5, color='black')
 
-def crossValidation():
-
-    mat_data = pd.read_csv('KidneyData2.csv')
-    X = mat_data.values[:, :24]
-    y = mat_data.values[:, np.newaxis, 24]
+def crossValidation(X, y, attributeNames, K = 10):
+    ''' '''
     print(X)
     print(y)
-    attributeNames = list(mat_data)
     N, M = X.shape
     print(X)
-    K = 10
+
     CV = model_selection.KFold(n_splits=K, shuffle=True)
     Features = np.zeros((M,K))
     Error_train = np.empty((K,1))
@@ -273,6 +269,8 @@ def crossValidation():
             plot(X[:,ff[i]],residual,'.')
             xlabel(attributeNames[ff[i]])
             ylabel('residual error')
+        
+        print(X[:,ff])
                   
         
     show()
