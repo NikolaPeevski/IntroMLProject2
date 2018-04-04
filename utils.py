@@ -273,9 +273,8 @@ def crossValidation():
             plot(X[:,ff[i]],residual,'.')
             xlabel(attributeNames[ff[i]])
             ylabel('residual error')
-        
+                  
         
     show()
-
-    print('Ran Exercise 6.2.1')
+    
 
