@@ -722,7 +722,8 @@ def ANNFull():
             print('Best train error: {0}...'.format(best_train_error))
             y_est = bestnet[k].sim(X_test).squeeze()
             errors[k] = np.power(y_est-y_test,2).sum().astype(float)/y_test.shape[0]
-            average_errors[k] = np.power(y_train-y_test,2).sum().astype(float)/y_test.shape[0]
+            y_avg = np.mean(y_train)
+            average_errors[k] = np.power(y_train-y_avg,2).sum().astype(float)/y_test.shape[0]
             k+=1
             #break
 
@@ -757,6 +758,8 @@ def ANNFull():
     Error_train_nofeatures = np.empty((K,1))
     Error_test_nofeatures = np.empty((K,1))
 
+    boxPlotError = np.empty((K,1))
+
     k=0
     for train_index, test_index in CV.split(X):
         
@@ -789,6 +792,8 @@ def ANNFull():
             m = lm.LinearRegression(fit_intercept=True).fit(X_train[:,selected_features], y_train)
             Error_train_fs[k] = np.square(y_train-m.predict(X_train[:,selected_features])).sum()/y_train.shape[0]
             Error_test_fs[k] = np.square(y_test-m.predict(X_test[:,selected_features])).sum()/y_test.shape[0]
+            boxPlotError[k] = np.power(m.predict(X_test[:,selected_features])-y_test,2).sum().astype(float)/y_test.shape[0]
+             #errors[k] = np.power(y_est-y_test,2).sum().astype(float)/y_test.shape[0]
 
             print('**DATA FOR MODEL: %d **', k+1)
             print('**TEST ERROR**:')
@@ -896,7 +901,7 @@ def ANNFull():
     
     figure()
     #boxplot(np.concatenate((np.reshape(Error_test_fs, (len(Error_test_fs), 1))), np.reshape(Best_errors, (len(Best_errors), 1))), np.reshape(Best_average_errors, (len(Best_average_errors), 1))),axis=1))
-    boxplot(np.concatenate((np.reshape(Error_test_fs, (len(Error_test_fs), 1)), np.reshape(Best_errors, (len(Best_errors), 1)), np.reshape(Best_average_errors, (len(Best_average_errors), 1))),axis=1))
+    boxplot(np.concatenate((np.reshape(boxPlotError, (len(boxPlotError), 1)), np.reshape(Best_errors, (len(Best_errors), 1)), np.reshape(Best_average_errors, (len(Best_average_errors), 1))),axis=1))
     xlabel('Logistic Regression   vs.   ANN   vs.   Average')
     ylabel('Error rate in %')
     show()
