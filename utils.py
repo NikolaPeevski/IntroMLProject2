@@ -298,10 +298,10 @@ def crossValidation(X, y, attributeNames, K = 10):
             clim(-1.5,0)
             xlabel('Iteration')
 
-        print('Cross validation fold {0}/{1}'.format(k+1,K))
-        print('Train indices: {0}'.format(train_index))
-        print('Test indices: {0}'.format(test_index))
-        print('Features no: {0}\n'.format(selected_features.size))
+        #print('Cross validation fold {0}/{1}'.format(k+1,K))
+        #print('Train indices: {0}'.format(train_index))
+        #print('Test indices: {0}'.format(test_index))
+        #print('Features no: {0}\n'.format(selected_features.size))
 
         k+=1
 
@@ -733,9 +733,11 @@ def ANNFull():
         figure(figsize=(6,7));
         subplot(2,1,1); bar(range(0,K),errors); title('Mean-square errors');
         subplot(2,1,2); plot(error_hist); title('Training error as function of BP iterations');
+        xlabel('Hidden units {0}'.format(n_hidden_units))
         figure(figsize=(6,7));
         subplot(2,1,1); plot(y_est); plot(y_test); title('Last CV-fold: est_y vs. test_y'); 
-        subplot(2,1,2); plot((y_est-y_test)); title('Last CV-fold: prediction error (est_y-test_y)'); 
+        subplot(2,1,2); plot((y_est-y_test)); title('Last CV-fold: prediction error (est_y-test_y)');
+        xlabel('Hidden units {0}'.format(n_hidden_units))
 
         return np.mean(errors), errors, average_errors
 
@@ -757,6 +759,9 @@ def ANNFull():
     Error_test_fs = np.empty((K,1))
     Error_train_nofeatures = np.empty((K,1))
     Error_test_nofeatures = np.empty((K,1))
+
+    selectedFeaturesLabels = []
+    selectedFeaturesValues = []
 
     boxPlotError = np.empty((K,1))
 
@@ -843,15 +848,15 @@ def ANNFull():
     minTrainError, minTrainErrorIndex = min( (Error_train_fs[i],i) for i in range(len(Error_train_fs)) )
     minTestError, minTestIndex = min( (Error_test_fs[i],i) for i in range(len(Error_test_fs)) )
 
-    print('MIN TRAIN EROR', Error_train_fs[minTrainErrorIndex], Error_test_fs[minTrainErrorIndex])
-    print('MIN TEST EROR', Error_train_fs[minTestIndex], Error_test_fs[minTestIndex])
+    #print('MIN TRAIN EROR', Error_train_fs[minTrainErrorIndex], Error_test_fs[minTrainErrorIndex])
+    #print('MIN TEST EROR', Error_train_fs[minTestIndex], Error_test_fs[minTestIndex])
 
     # Inspect selected feature coefficients effect on the entire dataset and
     # plot the fitted model residual error as function of each attribute to
     # inspect for systematic structure in the residual
     # f=5 # cross-validation fold to inspect
-    for f in range(1, 3):
-        print(Features, Features[:,f-1], Features[:,f-1].nonzero(), Features[:,f-1].nonzero()[0])
+    for f in range(1, 6):
+        #print(Features, Features[:,f-1], Features[:,f-1].nonzero(), Features[:,f-1].nonzero()[0])
         ff=Features[:,f-1].nonzero()[0]
         if len(ff) is 0:
             print('\nNo features were selected, i.e. the data (X) in the fold cannot describe the outcomes (y).' )
@@ -860,8 +865,14 @@ def ANNFull():
             np.set_printoptions(suppress=True)
             y_est= m.predict(X[:,ff])
             residual=y-y_est
-            print("**Coefficiency**")
+            print("**Coefficiency**", f)
+            selectedFeaturesLabels.append([attributeNames[i] for i in ff])
+           # print(([attributeNames[i] for i in ff]))
+            selectedFeaturesLabels.append(['%.5f' % j for j in m.coef_])
+           # print((['%.5f' % j for j in m.coef_]))
+            title('Coefficiency')
             print(ff,m.coef_)
+            print(selectedFeaturesLabels)
             print("**Interception**")
             print(m.intercept_)
             coef = m.score(X[:,ff],y)
@@ -904,6 +915,7 @@ def ANNFull():
     boxplot(np.concatenate((np.reshape(boxPlotError, (len(boxPlotError), 1)), np.reshape(Best_errors, (len(Best_errors), 1)), np.reshape(Best_average_errors, (len(Best_average_errors), 1))),axis=1))
     xlabel('Logistic Regression   vs.   ANN   vs.   Average')
     ylabel('Error rate in %')
+    print(selectedFeaturesLabels)
     show()
 
 
